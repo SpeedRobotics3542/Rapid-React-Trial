@@ -23,14 +23,14 @@
 #include <frc/kinematics/ChassisSpeeds.h>
 #include <frc/trajectory/constraint/DifferentialDriveVoltageConstraint.h>
 #include <frc/Compressor.h>
-//#include <frc/Solenoid.h>
-//#include <frc/DoubleSolenoid.h>
+#include <frc/Solenoid.h>
+#include <frc/DoubleSolenoid.h>
 
 class Robot : public frc::TimedRobot {
-  //frc::Compressor Compressor{0, frc::PneumaticsModuleType::CTREPCM};
-  //frc::DoubleSolenoid IntakePosition{frc::PneumaticsModuleType::CTREPCM, 0, 1};
-  //frc::DoubleSolenoid BallFlip{frc::PneumaticsModuleType::CTREPCM, 2, 3};
-  //frc::Solenoid ClimbRachet{frc::PneumaticsModuleType::CTREPCM, 4};
+  frc::Compressor Compressor{0, frc::PneumaticsModuleType::CTREPCM};
+  frc::DoubleSolenoid IntakePosition{frc::PneumaticsModuleType::CTREPCM, 0, 1};
+  frc::DoubleSolenoid BallFlip{frc::PneumaticsModuleType::CTREPCM, 2, 3};
+  frc::Solenoid ClimbRachet{frc::PneumaticsModuleType::CTREPCM, 4};
 
   TalonFX RightDrive1 {0}; 
   TalonFX RightDrive2 {1}; 
@@ -76,7 +76,6 @@ class Robot : public frc::TimedRobot {
 
   frc::DifferentialDriveOdometry m_odometry = frc::DifferentialDriveOdometry(PigeonToRotation(0));
   frc::DifferentialDriveKinematics DriveKin = frc::DifferentialDriveKinematics(units::length::inch_t(24.7));
-  frc::Pose2d FieldPosition = m_odometry.GetPose();
 
   frc::RamseteController PathFollower;
   frc::RamseteController PathFollower2;

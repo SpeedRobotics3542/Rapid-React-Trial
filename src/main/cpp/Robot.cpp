@@ -205,6 +205,9 @@ void Robot::AutonomousPeriodic()
       }
       break;
       //Intake
+      //Intake out
+      //Intake on
+      break;
       case 20:
       {
         //move backwards
@@ -220,10 +223,14 @@ void Robot::AutonomousPeriodic()
           PathTime.Start();
           C = 30;
         }
+      break;
       }
+      //Another trajectory to grab other ball
+      //Make sure intake is still on
+
       case 30:
       {
-        //moves back to starting position
+        //moves back to starting position (current trajectory is subject to change since ending position will change)
         const frc::Trajectory::State goal8 = trajectory8.Sample(PathTime.Get());
         frc::ChassisSpeeds adjustedSpeeds8 = PathFollower8.Calculate(FieldPosition, goal8);
         auto [left8, right8] = DriveKin.ToWheelSpeeds(adjustedSpeeds8);
@@ -238,7 +245,13 @@ void Robot::AutonomousPeriodic()
         }
       }
       break;
-      //Shoot
+      //Shoot 2 in case 40
+      //zero everything case 50
+      //Turn intake on and out case 60
+      //Move to alliance station wall pick up 1 (trajectory) case 70
+      // move to shoot (trajectory) case 80
+      //shoot 1
+
     
     }
   }
@@ -294,6 +307,7 @@ void Robot::AutonomousPeriodic()
         }
         break;
         //Shoot
+        //Same thing as four ball but shoot 2 at the end
     }
   }
   else 
@@ -655,6 +669,7 @@ frc::Trajectory Robot::GenerateTrajectory4()
 
   return trajectory4;
 }
+
 frc::Trajectory Robot::GenerateTrajectory5()
 {
   const frc::Pose2d sideStart{0_ft, 0_ft, frc::Rotation2d(0_deg)};
@@ -671,6 +686,7 @@ frc::Trajectory Robot::GenerateTrajectory5()
 
   return trajectory5;
 }
+
 frc::Trajectory Robot::GenerateTrajectory6()
 {
   const frc::Pose2d sideStart{6_ft, 0_ft, frc::Rotation2d(0_deg)};
@@ -687,6 +703,7 @@ frc::Trajectory Robot::GenerateTrajectory6()
 
   return trajectory6;
 }
+
 frc::Trajectory Robot::GenerateTrajectory7()
 {
   const frc::Pose2d sideStart{0_ft, 0_ft, frc::Rotation2d(0_deg)};
@@ -703,6 +720,7 @@ frc::Trajectory Robot::GenerateTrajectory7()
 
   return trajectory7;
 }
+
 frc::Trajectory Robot::GenerateTrajectory8()
 {
   const frc::Pose2d sideStart{6_ft, 0_ft, frc::Rotation2d(0_deg)};
@@ -719,6 +737,7 @@ frc::Trajectory Robot::GenerateTrajectory8()
 
   return trajectory8;
 }
+
 frc::Trajectory Robot::GenerateTrajectory9()
 {
   const frc::Pose2d sideStart{0_ft, 0_ft, frc::Rotation2d(0_deg)};
@@ -735,6 +754,7 @@ frc::Trajectory Robot::GenerateTrajectory9()
 
   return trajectory9;
 }
+
 frc::Trajectory Robot::GenerateTrajectory10()
 {
   const frc::Pose2d sideStart{6_ft, 0_ft, frc::Rotation2d(0_deg)};
