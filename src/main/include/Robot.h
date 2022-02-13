@@ -26,7 +26,9 @@
 #include <frc/Solenoid.h>
 #include <frc/DoubleSolenoid.h>
 
-class Robot : public frc::TimedRobot {
+class Robot : public frc::TimedRobot
+{
+
   frc::Compressor Compressor{0, frc::PneumaticsModuleType::CTREPCM};
   frc::DoubleSolenoid IntakePosition{frc::PneumaticsModuleType::CTREPCM, 0, 1};
   frc::DoubleSolenoid BallFlip{frc::PneumaticsModuleType::CTREPCM, 2, 3};
@@ -59,6 +61,7 @@ class Robot : public frc::TimedRobot {
   rev::CANSparkMax Climber1 = rev::CANSparkMax(11, rev::CANSparkMax::MotorType::kBrushless); 
     rev::SparkMaxRelativeEncoder Climber1Encoder = Climber1.GetEncoder();
     rev::SparkMaxPIDController Climber1PID = Climber1.GetPIDController();
+
   rev::CANSparkMax Climber2 = rev::CANSparkMax(12, rev::CANSparkMax::MotorType::kBrushless); 
     rev::SparkMaxRelativeEncoder Climber2Encoder = Climber2.GetEncoder();
     rev::SparkMaxPIDController Climber2PID = Climber2.GetPIDController();
@@ -87,6 +90,12 @@ class Robot : public frc::TimedRobot {
   frc::RamseteController PathFollower8;
   frc::RamseteController PathFollower9;
   frc::RamseteController PathFollower10;
+  frc::RamseteController PathFollower11;
+  frc::RamseteController PathFollower12;
+  frc::RamseteController PathFollower13;
+  frc::RamseteController PathFollower14;
+  frc::RamseteController PathFollower15;
+  frc::RamseteController Pathfollower16;
 
   frc::Trajectory trajectory;
   frc::Trajectory trajectory2;
@@ -98,6 +107,12 @@ class Robot : public frc::TimedRobot {
   frc::Trajectory trajectory8;
   frc::Trajectory trajectory9;
   frc::Trajectory trajectory10;
+  frc::Trajectory trajectory11;
+  frc::Trajectory trajectory12;
+  frc::Trajectory trajectory13;
+  frc::Trajectory trajectory14;
+  frc::Trajectory trajectory15;
+  frc::Trajectory trajectory16;
 
   frc::Timer Practice = frc::Timer();
   frc::Timer PathTime = frc::Timer();
@@ -150,6 +165,12 @@ class Robot : public frc::TimedRobot {
   frc::Trajectory GenerateTrajectory8();
   frc::Trajectory GenerateTrajectory9();
   frc::Trajectory GenerateTrajectory10();
+  frc::Trajectory GenerateTrajectory11();
+  frc::Trajectory GenerateTrajectory12();
+  frc::Trajectory GenerateTrajectory13();
+  frc::Trajectory GenerateTrajectory14();
+  frc::Trajectory GenerateTrajectory15();
+  frc::Trajectory GenerateTrajectory16();
 
   double ConversionToRaw(units::meters_per_second_t MSec)
   {

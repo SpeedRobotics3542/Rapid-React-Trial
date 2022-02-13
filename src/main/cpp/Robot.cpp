@@ -38,6 +38,12 @@ void Robot::RobotInit()
   trajectory8 = GenerateTrajectory8();
   trajectory9 = GenerateTrajectory9();
   trajectory10 = GenerateTrajectory10();
+  /*trajectory11 = GenerateTrajectory11();
+  trajectory12 = GenerateTrajectory12();
+  trajectory13 = GenerateTrajectory13();
+  trajectory14 = GenerateTrajectory14();
+  trajectory15 = GenerateTrajectory15();
+  trajectory16 = GenerateTrajectory16();*/
 
   frc::SmartDashboard::PutNumber("NumSetPointsRobotInit", trajectory.TotalTime().value());
 
@@ -121,8 +127,8 @@ void Robot::AutonomousInit()
   }
 }
 
-void Robot::AutonomousPeriodic() 
-{
+void Robot::AutonomousPeriodic() //Total of 12 to 16 trajectories
+{ 
   frc::SmartDashboard::PutNumber("Case", A);
   Pigeon.GetFusedHeading(Status);
   m_odometry.Update(PigeonToRotation(Status.heading), units::length::inch_t(ClicksToInch(LeftDrive1.GetSelectedSensorPosition())),
@@ -134,7 +140,7 @@ void Robot::AutonomousPeriodic()
   frc::SmartDashboard::PutNumber("OdometryTrackerY", FieldPosition.Y().value());
   frc::SmartDashboard::PutNumber("OdometryTrackerAngle", FieldPosition.Rotation().Degrees().value());
 
-  if (m_autoSelected == kTwoBall) 
+  if (m_autoSelected == kTwoBall) //Could change it to be 1 trajectory depending on where we shoot from
   {
     // Custom Auto goes here
       switch (A)
@@ -190,9 +196,9 @@ void Robot::AutonomousPeriodic()
       }
     
   } 
-  if(m_autoSelected == kFourBall)
+  if(m_autoSelected == kFourBall) //4-5 trajectories depending on where we shoot from
   { 
-    switch (C)
+    switch (C) 
     {
       //Shoot one
       case 10:
@@ -257,9 +263,9 @@ void Robot::AutonomousPeriodic()
     
     }
   }
-  if(m_autoSelected == kFiveBall)
+  if(m_autoSelected == kFiveBall) //5-6 trajectories depending on where we shoot from
   {  
-    switch (D)
+    switch (D) 
     {
       //Shoot
       case 10:
@@ -312,7 +318,7 @@ void Robot::AutonomousPeriodic()
         //Same thing as four ball but shoot 2 at the end
     }
   }
-  else 
+  else //2-3 trajectories depending on where we shoot from
   {
     // Default Auto goes here (Three ball)
     switch (B)
@@ -347,7 +353,10 @@ void Robot::AutonomousPeriodic()
         }
       }
       break;
-      //shoot
+      //Trajectory to grab other ball
+      //Trajectory to move back
+      //shoot 2 balls
+      //Everything past case 20 need to change
       case 30:
       {
         //moves back to starting position
@@ -428,6 +437,34 @@ void Robot::TeleopPeriodic()
     //Drive off of Joysticks
     RightDrive1.Set(ControlMode::PercentOutput, Driver.GetRightY()*-.65);
     LeftDrive1.Set(ControlMode::PercentOutput, Driver.GetLeftY()*-.65);
+    //Intake
+      //Driver axis or bumper depending
+      //Intake position
+      //Intake Speed
+      //Ball holder that goes along with it
+      //limit switches to stop the ball
+    //Shooter
+      //Ball holder to move balls to shooter
+      //Shooter position
+      //Shooter speed
+      //limit switches to let ball into shooter
+    //climber to be fully programmed
+      //Climber on one button + over ride to restart climb or change position
+      //Climber on timer = completely autonomous (besides over ride)
+      //Hit A button
+        //One climber hook to shoots up to grab bar
+        //Robot to swing back
+        //Second climber hook reaches up to grab bar
+        //Second climber hook pulls down on bar 
+        //First climber hook comes off of bar
+        //Angle of robot changes again
+        //First climber hook grabs second bar
+        //First climber hook pulls down
+        // Second climber hook reach for final bar
+        //Second climber hook pulls down 
+        //Angle of robot changes again
+        //First climber hook grabs the final bar
+        //First climber hook and second climber hook are on the same level at the same height
 
     /*frc::Pose2d FieldPosition = m_odometry.GetPose();
 
@@ -499,10 +536,6 @@ void Robot::TeleopPeriodic()
       m_odometry.ResetPosition(frc::Pose2d(units::length::meter_t(0),units::length::meter_t(0),
       PigeonToRotation(Status.heading)),PigeonToRotation(Status.heading));
     }*/
-    //Intake and index on one button driver?
-    //Index and shooter on another Manipulator
-    //Climber on one button + over ride to restart climb or change position
-      //Climber on timer = completely autonomous (besides over ride)
 
     /*if(Driver.GetXButton()==1)
     { 
@@ -515,7 +548,7 @@ void Robot::TeleopPeriodic()
       RightDrive1.Set(ControlMode::PercentOutput, 0);
     }*/
 
-    //timer onBbutton
+    //timer on button
     /*if(Driver.GetAButton()==1)
     {
       Practice.Reset();
@@ -530,16 +563,17 @@ void Robot::TeleopPeriodic()
       TopShooter.Set(0);
       BottomShooter.Set(0);
     }*/
+
   if(Manipulator.GetAButton()==1)
   {
     switch (Hang)
     { //When testing do one case at A time
       case 10:
       {
-          Climber.Reset();
-          Climber.Start();
-          Climber1Encoder.SetPosition(5);
-          Climber2Encoder.SetPosition(5);
+        Climber.Reset();
+        Climber.Start();
+        Climber1Encoder.SetPosition(5);
+        Climber2Encoder.SetPosition(5);
         Hang = 20;
       }
       break;
@@ -772,6 +806,108 @@ frc::Trajectory Robot::GenerateTrajectory10()
 
   return trajectory10;
 }
+
+/*frc::Trajectory Robot::GenerateTrajectory11()
+{
+  const frc::Pose2d sideStart{6_ft, 0_ft, frc::Rotation2d(0_deg)};
+  const frc::Pose2d crossScale{0_ft, 0_ft, frc::Rotation2d(0_deg)};
+  std::vector<frc::Translation2d> interiorWaypoints
+    {frc::Translation2d{5_ft, 0_ft},
+    frc::Translation2d{4_ft, 0_ft}};
+  frc::TrajectoryConfig config{12_fps, 5_fps_sq};
+  config.SetReversed(true);
+
+  frc::Trajectory trajectory = frc::TrajectoryGenerator::GenerateTrajectory
+  (sideStart, interiorWaypoints, crossScale, config);
+  frc::SmartDashboard::PutBoolean("TrajectoryGeneration", true);
+
+  return trajectory11;
+}
+
+frc::Trajectory Robot::GenerateTrajectory12()
+{
+  const frc::Pose2d sideStart{6_ft, 0_ft, frc::Rotation2d(0_deg)};
+  const frc::Pose2d crossScale{0_ft, 0_ft, frc::Rotation2d(0_deg)};
+  std::vector<frc::Translation2d> interiorWaypoints
+    {frc::Translation2d{5_ft, 0_ft},
+    frc::Translation2d{4_ft, 0_ft}};
+  frc::TrajectoryConfig config{12_fps, 5_fps_sq};
+  config.SetReversed(true);
+
+  frc::Trajectory trajectory = frc::TrajectoryGenerator::GenerateTrajectory
+  (sideStart, interiorWaypoints, crossScale, config);
+  frc::SmartDashboard::PutBoolean("TrajectoryGeneration", true);
+
+  return trajectory12;
+}
+
+frc::Trajectory Robot::GenerateTrajectory13()
+{
+  const frc::Pose2d sideStart{6_ft, 0_ft, frc::Rotation2d(0_deg)};
+  const frc::Pose2d crossScale{0_ft, 0_ft, frc::Rotation2d(0_deg)};
+  std::vector<frc::Translation2d> interiorWaypoints
+    {frc::Translation2d{5_ft, 0_ft},
+    frc::Translation2d{4_ft, 0_ft}};
+  frc::TrajectoryConfig config{12_fps, 5_fps_sq};
+  config.SetReversed(true);
+
+  frc::Trajectory trajectory = frc::TrajectoryGenerator::GenerateTrajectory
+  (sideStart, interiorWaypoints, crossScale, config);
+  frc::SmartDashboard::PutBoolean("TrajectoryGeneration", true);
+
+  return trajectory13;
+}
+
+frc::Trajectory Robot::GenerateTrajectory14()
+{
+  const frc::Pose2d sideStart{6_ft, 0_ft, frc::Rotation2d(0_deg)};
+  const frc::Pose2d crossScale{0_ft, 0_ft, frc::Rotation2d(0_deg)};
+  std::vector<frc::Translation2d> interiorWaypoints
+    {frc::Translation2d{5_ft, 0_ft},
+    frc::Translation2d{4_ft, 0_ft}};
+  frc::TrajectoryConfig config{12_fps, 5_fps_sq};
+  config.SetReversed(true);
+
+  frc::Trajectory trajectory = frc::TrajectoryGenerator::GenerateTrajectory
+  (sideStart, interiorWaypoints, crossScale, config);
+  frc::SmartDashboard::PutBoolean("TrajectoryGeneration", true);
+
+  return trajectory14;
+}
+
+frc::Trajectory Robot::GenerateTrajectory15()
+{
+  const frc::Pose2d sideStart{6_ft, 0_ft, frc::Rotation2d(0_deg)};
+  const frc::Pose2d crossScale{0_ft, 0_ft, frc::Rotation2d(0_deg)};
+  std::vector<frc::Translation2d> interiorWaypoints
+    {frc::Translation2d{5_ft, 0_ft},
+    frc::Translation2d{4_ft, 0_ft}};
+  frc::TrajectoryConfig config{12_fps, 5_fps_sq};
+  config.SetReversed(true);
+
+  frc::Trajectory trajectory = frc::TrajectoryGenerator::GenerateTrajectory
+  (sideStart, interiorWaypoints, crossScale, config);
+  frc::SmartDashboard::PutBoolean("TrajectoryGeneration", true);
+
+  return trajectory15;
+}
+
+frc::Trajectory Robot::GenerateTrajectory16()
+{
+  const frc::Pose2d sideStart{6_ft, 0_ft, frc::Rotation2d(0_deg)};
+  const frc::Pose2d crossScale{0_ft, 0_ft, frc::Rotation2d(0_deg)};
+  std::vector<frc::Translation2d> interiorWaypoints
+    {frc::Translation2d{5_ft, 0_ft},
+    frc::Translation2d{4_ft, 0_ft}};
+  frc::TrajectoryConfig config{12_fps, 5_fps_sq};
+  config.SetReversed(true);
+
+  frc::Trajectory trajectory = frc::TrajectoryGenerator::GenerateTrajectory
+  (sideStart, interiorWaypoints, crossScale, config);
+  frc::SmartDashboard::PutBoolean("TrajectoryGeneration", true);
+
+  return trajectory16;
+}*/
 
 #ifndef RUNNING_FRC_TESTS
 int main() 
