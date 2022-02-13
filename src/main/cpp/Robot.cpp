@@ -437,6 +437,22 @@ void Robot::TeleopPeriodic()
     //Drive off of Joysticks
     RightDrive1.Set(ControlMode::PercentOutput, Driver.GetRightY()*-.65);
     LeftDrive1.Set(ControlMode::PercentOutput, Driver.GetLeftY()*-.65);
+
+    if(Driver.GetRightTriggerAxis()==1 and Driver.GetLeftTriggerAxis()==0)
+    {
+      IntakePosition.Set(frc::DoubleSolenoid::Value::kForward);
+      Intake.Set(.5);
+    }
+    else if(Driver.GetRightTriggerAxis()==0 and Driver.GetLeftTriggerAxis()==1)
+    {
+      IntakePosition.Set(frc::DoubleSolenoid::Value::kForward);
+      Intake.Set(-.5);
+    }
+    else
+    {
+      IntakePosition.Set(frc::DoubleSolenoid::Value::kReverse);
+      Intake.Set(0);
+    }
     //Intake
       //Driver axis or bumper depending
       //Intake position
