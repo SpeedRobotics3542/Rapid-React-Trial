@@ -6,12 +6,14 @@
 
 #include <fmt/core.h>
 
-void Robot::RobotInit() {
+void Robot::RobotInit() 
+{
+  frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
   m_chooser.SetDefaultOption(kThreeBall, kThreeBall);
   m_chooser.AddOption(kTwoBall, kTwoBall);
   m_chooser.AddOption(kFourBall, kFourBall);
   m_chooser.AddOption(kFiveBall, kFiveBall);
-  frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
+  
 
   //Follow command
   RightDrive2.Follow(RightDrive1);
@@ -475,7 +477,7 @@ void Robot::TeleopPeriodic()
       frc::SmartDashboard::PutNumber("NumSetPoints", trajectory4.TotalTime().value());*/
     }
 
-    //Running Drive onBlimit switch
+    //Running Drive on limit switch
     /*if(TestSwitch.Get() == 1)
     {
       LeftDrive1.Set(ControlMode::Position, 10000);
@@ -489,14 +491,14 @@ void Robot::TeleopPeriodic()
     }*/
 
     //Resets the drive encoder, resets field position, and updates pigeon values
-    if(Driver.GetYButtonPressed()==1)
+    /*if(Driver.GetYButtonPressed()==1)
     {
       Pigeon.GetFusedHeading(Status);
       LeftDrive1.SetSelectedSensorPosition(0);
       RightDrive1.SetSelectedSensorPosition(0);
       m_odometry.ResetPosition(frc::Pose2d(units::length::meter_t(0),units::length::meter_t(0),
       PigeonToRotation(Status.heading)),PigeonToRotation(Status.heading));
-    }
+    }*/
     //Intake and index on one button driver?
     //Index and shooter on another Manipulator
     //Climber on one button + over ride to restart climb or change position
@@ -528,17 +530,16 @@ void Robot::TeleopPeriodic()
       TopShooter.Set(0);
       BottomShooter.Set(0);
     }*/
+  if(Manipulator.GetAButton()==1)
+  {
     switch (Hang)
-    { //When testing do one case atBtime
+    { //When testing do one case at A time
       case 10:
       {
-        if(Manipulator.GetAButtonPressed()==1)
-        {
           Climber.Reset();
           Climber.Start();
           Climber1Encoder.SetPosition(5);
           Climber2Encoder.SetPosition(5);
-        }
         Hang = 20;
       }
       break;
@@ -578,7 +579,7 @@ void Robot::TeleopPeriodic()
         }
       }*/
     }
-
+  }
     /*if(Driver.GetRightTriggerAxis() == 1)
     {
       BottomShooterPID.SetReference(SetPoint, rev::ControlType::kVelocity);
