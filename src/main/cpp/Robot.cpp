@@ -19,6 +19,8 @@ void Robot::RobotInit()
   RightDrive2.Follow(RightDrive1);
   LeftDrive2.Follow(LeftDrive1);
 
+  Intake2.Follow(Intake1);
+
   //Controls Ramp Rate
   RightDrive1.ConfigClosedloopRamp(1);
   LeftDrive1.ConfigClosedloopRamp(1);
@@ -59,6 +61,9 @@ void Robot::RobotInit()
   RightDrive2.SetInverted(InvertType::FollowMaster);
   LeftDrive2.SetInverted(InvertType::FollowMaster);
 
+  Intake1.SetInverted(false);
+  Intake2.SetInverted(InvertType::FollowMaster);
+
   //Defines Drive Sensor
   LeftDrive1.ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor, 0, 10);
   RightDrive1.ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor, 0, 10);
@@ -78,6 +83,8 @@ void Robot::RobotInit()
   //Defining Climb encoders
   ClimberAngle1.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Absolute, 0, 10);
   ClimberAngle2.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Absolute, 0, 10);
+
+  ShooterAngle.ConfigIntegratedSensorAbsoluteRange(AbsoluteSensorRange::Signed_PlusMinus180, 10);
   
 }
 
@@ -435,23 +442,88 @@ void Robot::TeleopInit()
 void Robot::TeleopPeriodic() 
 {
     //Drive off of Joysticks
-    RightDrive1.Set(ControlMode::PercentOutput, Driver.GetRightY()*-.65);
-    LeftDrive1.Set(ControlMode::PercentOutput, Driver.GetLeftY()*-.65);
+    RightDrive1.Set(ControlMode::PercentOutput, Driver.GetRightY()*.65);
+    LeftDrive1.Set(ControlMode::PercentOutput, Driver.GetLeftY()*.65);
 
-    if(Driver.GetRightTriggerAxis()==1 and Driver.GetLeftTriggerAxis()==0)
+    if(Manipulator.GetXButton()==1)
     {
-      IntakePosition.Set(frc::DoubleSolenoid::Value::kForward);
-      Intake.Set(.5);
-    }
-    else if(Driver.GetRightTriggerAxis()==0 and Driver.GetLeftTriggerAxis()==1)
-    {
-      IntakePosition.Set(frc::DoubleSolenoid::Value::kForward);
-      Intake.Set(-.5);
+      ClimberAngle1.Set(ControlMode::Position, 20);
+      ClimberAngle2.Set(ControlMode::Position, 20);
     }
     else
     {
-      IntakePosition.Set(frc::DoubleSolenoid::Value::kReverse);
-      Intake.Set(0);
+      ClimberAngle1.Set(ControlMode::Position, 0);
+      ClimberAngle2.Set(ControlMode::Position, 0);
+    }
+
+    if(Manipulator.GetRightBumper()==1)
+    {
+      BottomShooterPID.SetReference(SetPoint, rev::ControlType::kVelocity);
+      TopShooterPID.SetReference(SetPoint, rev::ControlType::kVelocity);
+    }
+
+    
+
+    if(Driver.GetRightTriggerAxis()==1 and Driver.GetLeftTriggerAxis()==0)
+    {
+      //IntakePosition.Set(frc::DoubleSolenoid::Value::kForward);
+      Intake1.Set(ControlMode::PercentOutput, .5);
+      //ShooterAngle.SetSelectedSensorPosition(200, 0, 10);
+      if(/*BackSwitch.Get() == 1 and */SideSwitch.Get() == 1)
+      {
+        Magazine.Set(0);
+        //WheelStopper.Set(false);
+      } 
+      else
+      {
+        Magazine.Set(.75);
+      }
+      
+    }
+    else if(Driver.GetRightTriggerAxis()==0 and Driver.GetLeftTriggerAxis()==1)
+    {
+      //IntakePosition.Set(frc::DoubleSolenoid::Value::kForward);
+      Intake1.Set(ControlMode::PercentOutput, -.5);
+      //ShooterAngle.SetSelectedSensorPosition(200, 0, 10);
+    }
+    else
+    {
+      //IntakePosition.Set(frc::DoubleSolenoid::Value::kReverse);
+      Intake1.Set(ControlMode::PercentOutput, 0);
+    }
+    if(Manipulator.GetAButton()==1 and Manipulator.GetBButton()==0 and Manipulator.GetXButton()==0 and Manipulator.GetYButton()==0)
+    {
+      TopShooterPID.SetReference(LowerForward, rev::ControlType::kVelocity);
+      BottomShooterPID.SetReference(LowerForward, rev::ControlType::kVelocity);
+      Magazine.Set(-.75);
+      //Shooter angle to be ready to shoot
+    }
+    else if(Manipulator.GetAButton()==0 and Manipulator.GetBButton()==1 and Manipulator.GetXButton()==0 and Manipulator.GetYButton()==0)
+    {
+      TopShooterPID.SetReference(HigherForward, rev::ControlType::kVelocity);
+      BottomShooterPID.SetReference(HigherForward, rev::ControlType::kVelocity);
+      Magazine.Set(-.75);
+      //Shooter angle to be ready to shoot
+    }
+    else if(Manipulator.GetAButton()==0 and Manipulator.GetBButton()==0 and Manipulator.GetXButton()==1 and Manipulator.GetYButton()==0)
+    {
+      TopShooterPID.SetReference(HigherBackward, rev::ControlType::kVelocity);
+      BottomShooterPID.SetReference(HigherBackward, rev::ControlType::kVelocity);
+      Magazine.Set(-.75);
+      //Shooter angle to be ready to shoot
+    }
+    else if(Manipulator.GetAButton()==0 and Manipulator.GetBButton()==0 and Manipulator.GetXButton()==0 and Manipulator.GetYButton()==1)
+    {
+      TopShooterPID.SetReference(LowerBackward, rev::ControlType::kVelocity);
+      BottomShooterPID.SetReference(LowerBackward, rev::ControlType::kVelocity);
+      Magazine.Set(-.75);
+      //Shooter angle to be ready to shoot
+    }
+    else
+    {
+      TopShooter.Set(0);
+      BottomShooter.Set(0);
+      Magazine.Set(0);
     }
     //Intake
       //Driver axis or bumper depending
@@ -579,57 +651,6 @@ void Robot::TeleopPeriodic()
       TopShooter.Set(0);
       BottomShooter.Set(0);
     }*/
-
-  if(Manipulator.GetAButton()==1)
-  {
-    switch (Hang)
-    { //When testing do one case at A time
-      case 10:
-      {
-        Climber.Reset();
-        Climber.Start();
-        Climber1Encoder.SetPosition(5);
-        Climber2Encoder.SetPosition(5);
-        Hang = 20;
-      }
-      break;
-      /*case 20:
-      {
-        if(Climber.Get() >= units::second_t(3))
-        {
-          Climber.Stop();
-          Climber.Reset();
-          Climber.Start();
-          Climber1Encoder.SetPosition(-5); //0
-          Climber2Encoder.SetPosition(-5); //0
-        }
-        Hang = 30;
-      }
-      break;
-      case 30:
-      {
-        if(Climber.Get() >= units::second_t(3))
-        {
-          Climber.Stop();
-          Climber.Reset();
-          Climber.Start();
-          ClimberAngle1.Set(ControlMode::Position, 30);
-          ClimberAngle2.Set(ControlMode::Position, 30);
-        }
-        Hang = 40;
-      }
-      case 40:
-      {
-        if(Climber.Get() >= units::second_t(3))
-        {
-          Climber.Stop();
-          Climber.Reset();
-          Climber.Start();
-          Climber1Encoder.SetPosition(5);
-        }
-      }*/
-    }
-  }
     /*if(Driver.GetRightTriggerAxis() == 1)
     {
       BottomShooterPID.SetReference(SetPoint, rev::ControlType::kVelocity);

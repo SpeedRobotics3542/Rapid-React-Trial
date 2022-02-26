@@ -28,11 +28,10 @@
 
 class Robot : public frc::TimedRobot
 {
-
-  frc::Compressor Compressor{0, frc::PneumaticsModuleType::CTREPCM};
-  frc::DoubleSolenoid IntakePosition{frc::PneumaticsModuleType::CTREPCM, 0, 1};
-  frc::DoubleSolenoid BallFlip{frc::PneumaticsModuleType::CTREPCM, 2, 3};
-  frc::Solenoid ClimbRachet{frc::PneumaticsModuleType::CTREPCM, 4};
+  /*frc::Compressor Compressor{0, frc::PneumaticsModuleType::CTREPCM};
+  frc::DoubleSolenoid IntakePosition{frc::PneumaticsModuleType::CTREPCM, 1, 4};
+  frc::Solenoid WheelStopper{frc::PneumaticsModuleType::CTREPCM, 0};
+  frc::Solenoid ClimbRachet{frc::PneumaticsModuleType::CTREPCM, 2};*/
 
   TalonFX RightDrive1 {0}; 
   TalonFX RightDrive2 {1}; 
@@ -44,34 +43,32 @@ class Robot : public frc::TimedRobot
     rev::SparkMaxPIDController TopShooterPID = TopShooter.GetPIDController();
     rev::SparkMaxRelativeEncoder TopShooterEncoder = TopShooter.GetEncoder();
 
-  rev::CANSparkMax ShooterAngle = rev::CANSparkMax(6, rev::CANSparkMax::MotorType::kBrushless);
-    rev::SparkMaxPIDController ShooterAnglePID = ShooterAngle.GetPIDController();
-    rev::SparkMaxRelativeEncoder ShooterAngleEncoder = ShooterAngle.GetEncoder();
-
-  rev::CANSparkMax BottomShooter = rev::CANSparkMax(7, rev::CANSparkMax::MotorType::kBrushless);
+  rev::CANSparkMax BottomShooter = rev::CANSparkMax(6, rev::CANSparkMax::MotorType::kBrushless);
     rev::SparkMaxPIDController BottomShooterPID = BottomShooter.GetPIDController();
     rev::SparkMaxRelativeEncoder BottomShooterEncoder = BottomShooter.GetEncoder();
 
-  rev::CANSparkMax Indexer1 = rev::CANSparkMax(8, rev::CANSparkMax::MotorType::kBrushless);
-  rev::CANSparkMax Indexer2 = rev::CANSparkMax(9, rev::CANSparkMax::MotorType::kBrushless);
+  TalonFX ShooterAngle {7};
+
+  rev::CANSparkMax Magazine = rev::CANSparkMax(8, rev::CANSparkMax::MotorType::kBrushless);
 
   TalonSRX ClimberAngle1 {10}; 
   TalonSRX ClimberAngle2 {11};
 
-  rev::CANSparkMax Climber1 = rev::CANSparkMax(11, rev::CANSparkMax::MotorType::kBrushless); 
+  rev::CANSparkMax Climber1 = rev::CANSparkMax(12, rev::CANSparkMax::MotorType::kBrushless); 
     rev::SparkMaxRelativeEncoder Climber1Encoder = Climber1.GetEncoder();
     rev::SparkMaxPIDController Climber1PID = Climber1.GetPIDController();
 
-  rev::CANSparkMax Climber2 = rev::CANSparkMax(12, rev::CANSparkMax::MotorType::kBrushless); 
+  rev::CANSparkMax Climber2 = rev::CANSparkMax(13, rev::CANSparkMax::MotorType::kBrushless); 
     rev::SparkMaxRelativeEncoder Climber2Encoder = Climber2.GetEncoder();
     rev::SparkMaxPIDController Climber2PID = Climber2.GetPIDController();
 
-  rev::CANSparkMax Intake = rev::CANSparkMax(13, rev::CANSparkMax::MotorType::kBrushless);
-    rev::SparkMaxRelativeEncoder IntakeEncoder = Intake.GetEncoder();
-    rev::SparkMaxPIDController IntakePID = Intake.GetPIDController();
+  VictorSPX Intake1 {14};
+  VictorSPX Intake2 {15};
 
   
   frc::DigitalInput TestSwitch = frc::DigitalInput(0); //Limit Switch
+  frc::DigitalInput BackSwitch = frc::DigitalInput(1);
+  frc::DigitalInput SideSwitch = frc::DigitalInput(2);
    
  public:
   
@@ -90,12 +87,12 @@ class Robot : public frc::TimedRobot
   frc::RamseteController PathFollower8;
   frc::RamseteController PathFollower9;
   frc::RamseteController PathFollower10;
-  frc::RamseteController PathFollower11;
+  /*frc::RamseteController PathFollower11;
   frc::RamseteController PathFollower12;
   frc::RamseteController PathFollower13;
   frc::RamseteController PathFollower14;
   frc::RamseteController PathFollower15;
-  frc::RamseteController Pathfollower16;
+  frc::RamseteController Pathfollower16;*/
 
   frc::Trajectory trajectory;
   frc::Trajectory trajectory2;
@@ -107,12 +104,12 @@ class Robot : public frc::TimedRobot
   frc::Trajectory trajectory8;
   frc::Trajectory trajectory9;
   frc::Trajectory trajectory10;
-  frc::Trajectory trajectory11;
+  /*frc::Trajectory trajectory11;
   frc::Trajectory trajectory12;
   frc::Trajectory trajectory13;
   frc::Trajectory trajectory14;
   frc::Trajectory trajectory15;
-  frc::Trajectory trajectory16;
+  frc::Trajectory trajectory16;*/
 
   frc::Timer Practice = frc::Timer();
   frc::Timer PathTime = frc::Timer();
@@ -125,6 +122,10 @@ class Robot : public frc::TimedRobot
 
 
   double SetPoint = 200;
+  double LowerForward = 200;
+  double LowerBackward = 200;
+  double HigherForward = 300;
+  double HigherBackward = 300;
   bool StartMath = false;
   int A = 10; //2 ball
   int B = 10; //3 ball
@@ -165,12 +166,12 @@ class Robot : public frc::TimedRobot
   frc::Trajectory GenerateTrajectory8();
   frc::Trajectory GenerateTrajectory9();
   frc::Trajectory GenerateTrajectory10();
-  frc::Trajectory GenerateTrajectory11();
+  /*frc::Trajectory GenerateTrajectory11();
   frc::Trajectory GenerateTrajectory12();
   frc::Trajectory GenerateTrajectory13();
   frc::Trajectory GenerateTrajectory14();
   frc::Trajectory GenerateTrajectory15();
-  frc::Trajectory GenerateTrajectory16();
+  frc::Trajectory GenerateTrajectory16();*/
 
   double ConversionToRaw(units::meters_per_second_t MSec)
   {
