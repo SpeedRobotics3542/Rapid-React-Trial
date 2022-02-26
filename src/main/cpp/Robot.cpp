@@ -81,8 +81,8 @@ void Robot::RobotInit()
   RightDrive1.Config_kI(0,.0001);
 
   //Defining Climb encoders
-  ClimberAngle1.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Absolute, 0, 10);
-  ClimberAngle2.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Absolute, 0, 10);
+  ClimberAngle1.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, 0, 10);
+  ClimberAngle2.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, 0, 10);
 
   ShooterAngle.ConfigIntegratedSensorAbsoluteRange(AbsoluteSensorRange::Signed_PlusMinus180, 10);
   
